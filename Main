@@ -1,0 +1,82 @@
+import random
+import tkinter as tk
+from tkinter import messagebox
+from PIL import Image, ImageTk  # Importar o Pillow para lidar com imagens
+
+# Lista de filmes por gênero, incluindo os caminhos das imagens associadas
+filmes_por_genero = {
+     'Ação': [
+        {'titulo': 'Vingadores: Ultimato', 'imagem': 'imagens/Vingadores.jpg'},
+        {'titulo': 'Mad Max: Estrada da Fúria', 'imagem': 'imagens/MadMax.jpg'},
+        {'titulo': 'John Wick', 'imagem': 'imagens/JohnWick.jpg'},
+        {'titulo': 'Duro de Matar', 'imagem': 'imagens/DuroDeMatar.jpg'}
+    ],
+    'Comédia': [
+        {'titulo': 'O Máskara', 'imagem': 'imagens/mascara.jpg'},
+        {'titulo': 'A Nova Cinderela', 'imagem': 'imagens/cinderela.jpg'},
+        {'titulo': 'A Morte de Estaline', 'imagem': 'imagens/morteestaline.jpg'},
+        {'titulo': 'Ligeiramente Grávidos', 'imagem': 'imagens/ligeiramentegrávidos.jpg'}
+    ],
+    'Drama': [
+        {'titulo': 'Forrest Gump', 'imagem': 'imagens/forrestgump.jpg'},
+        {'titulo': 'O Poderoso Chefão', 'imagem': 'imagens/poderosochefao.jpg'},
+        {'titulo': 'Clube da Luta', 'imagem': 'imagens/clubedaluta.jpg'},
+        {'titulo': 'À Procura da Felicidade', 'imagem': 'imagens/procuradafelicidade.jpg'}
+    ],
+    # Adicione mais gêneros e filmes aqui conforme necessário
+}
+
+# essa parte aqui e pra sortear o filme e a imagem
+def sortear_filme():
+    genero = genero_var.get()
+    
+    if genero not in filmes_por_genero:
+        messagebox.showerror("Erro", "Selecione um gênero válido!")
+        return
+    
+    # Genero escolhido ai sortear o filme
+    filme_sorteado = random.choice(filmes_por_genero[genero])
+    
+    # exibição do titulo do filme
+    nome_filme_label.config(text=filme_sorteado['titulo'])
+    
+    # Aqui e para converter a imagem e conseguir mostrar no aplicativo 
+    try:
+        imagem = Image.open(filme_sorteado['imagem'])
+        imagem.thumbnail((200, 300))  # linha para ajustar a imagem
+        imagem = ImageTk.PhotoImage(imagem)
+        imagem_label.config(image=imagem)
+        imagem_label.image = imagem  # Mantém uma referência à imagem para não ser coletada pelo garbage collector
+    except Exception as e:
+        messagebox.showerror("Erro", f"Não foi possível carregar a imagem: {e}")
+
+# Criar a interface gráfica
+root = tk.Tk()
+root.title("Sorteador de Filmes por Gênero")
+
+# Variável para armazenar o gênero escolhido
+genero_var = tk.StringVar()
+
+# Labels e botões para interação
+label = tk.Label(root, text="Escolha o gênero de filme:")
+label.pack(pady=10)
+
+# Cria os botões de gênero
+for genero in filmes_por_genero.keys():
+    radio_button = tk.Radiobutton(root, text=genero, value=genero, variable=genero_var)
+    radio_button.pack(anchor='w')
+
+# Botão para sortear o filme
+sorteio_button = tk.Button(root, text="Sortear Filme", command=sortear_filme)
+sorteio_button.pack(pady=20)
+
+# Label para mostrar o nome do filme sorteado
+nome_filme_label = tk.Label(root, text="", font=("Helvetica", 16))
+nome_filme_label.pack(pady=10)
+
+# Label para exibir a imagem do filme sorteado
+imagem_label = tk.Label(root)
+imagem_label.pack(pady=10)
+
+# Iniciar a interface gráfica
+root.mainloop()
